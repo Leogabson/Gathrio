@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser } from "../services/auth.service";
+import {
+  registerUser,
+  loginUser,
+  forgotPassword,
+  resetPassword,
+} from "../services/auth.service";
 import {
   validateRegistrationData,
   validateLoginData,
@@ -105,4 +110,74 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     success: true,
     message: "Logout successful",
   });
+};
+
+export const forgotPasswordHandler = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+      return;
+    }
+
+    const result = await forgotPassword(email);
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to process request";
+    res.status(400).json({
+      success: false,
+      message: errorMessage,
+    });
+  }
+};
+
+export const resetPasswordHandler = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      res.status(400).json({
+        success: false,
+        message: "Token and password are required",
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
+      return;
+    }
+
+    const result = await resetPassword(token, password);
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to reset password";
+    res.status(400).json({
+      success: false,
+      message: errorMessage,
+    });
+  }
 };

@@ -1,6 +1,7 @@
 import prisma from "../config/database.config";
 import { hashPassword, comparePassword } from "../utils/password.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.util";
+import { generateResetToken, hashResetToken } from "../utils/token.util";
 
 interface RegisterInput {
   email: string;
@@ -95,5 +96,64 @@ export const loginUser = async (input: LoginInput) => {
     user: userWithoutPassword,
     accessToken,
     refreshToken,
+  };
+};
+
+export const forgotPassword = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new Error("No user found with this email address");
+  }
+
+  const resetToken = generateResetToken();
+  const hashedToken = hashResetToken(resetToken);
+  const tokenExpiry = new Date(Date.now() + 3600000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      reset_token: hashedToken,
+      reset_token_expiry: tokenExpiry,
+    },
+  });
+
+  return {
+    message: "Password reset link sent to your email",
+    resetToken,
+  };
+};
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  const hashedToken = hashResetToken(token);
+
+  const user = await prisma.user.findFirst({
+    where: {
+      reset_token: hashedToken,
+      reset_token_expiry: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (!user) {
+    throw new Error("Invalid or expired reset token");
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password_hash: hashedPassword,
+      reset_token: null,
+      reset_token_expiry: null,
+    },
+  });
+
+  return {
+    message: "Password reset successfully",
   };
 };

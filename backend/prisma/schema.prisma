@@ -19,6 +19,8 @@ model User {
   bio              String?
   role             String   @default("attendee")
   is_verified      Boolean  @default(false)
+  reset_token      String?
+  reset_token_expiry DateTime?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
