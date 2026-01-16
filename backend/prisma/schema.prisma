@@ -24,5 +24,82 @@ model User {
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
+  events   Event[]
+  bookings Booking[]
+
+
   @@map("users")
+}
+
+
+model Event {
+  id                      String    @id @default(uuid())
+  organizer_id            String
+  title                   String
+  description             String?   @db.Text
+  event_type              String    @default("hybrid")
+  category                String?
+  start_time              DateTime
+  end_time                DateTime
+  timezone                String    @default("UTC")
+  venue_name              String?
+  venue_address           String?
+  venue_latitude          Decimal?  @db.Decimal(10, 8)
+  venue_longitude         Decimal?  @db.Decimal(11, 8)
+  max_in_person_capacity  Int?
+  max_virtual_capacity    Int?
+  banner_image_url        String?
+  status                  String    @default("draft")
+  is_featured             Boolean   @default(false)
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
+
+  organizer     User          @relation(fields: [organizer_id], references: [id], onDelete: Cascade)
+  ticket_types  TicketType[]
+  bookings      Booking[]
+
+  @@map("events")
+}
+
+model TicketType {
+  id                 String    @id @default(uuid())
+  event_id           String
+  name               String
+  description        String?   @db.Text
+  attendance_mode    String
+  price              Decimal   @db.Decimal(10, 2)
+  quantity_available Int
+  quantity_sold      Int       @default(0)
+  sale_start_time    DateTime?
+  sale_end_time      DateTime?
+  created_at         DateTime  @default(now())
+
+  event    Event      @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@map("ticket_types")
+}
+
+model Booking {
+  id                 String    @id @default(uuid())
+  user_id            String
+  event_id           String
+  ticket_type_id     String
+  quantity           Int
+  total_amount       Decimal   @db.Decimal(10, 2)
+  discount_code      String?
+  discount_amount    Decimal?  @db.Decimal(10, 2)
+  payment_status     String    @default("pending")
+  payment_intent_id  String?
+  booking_reference  String    @unique
+  qr_code_url        String?
+  attendance_status  String    @default("registered")
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  user        User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  event       Event      @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  ticket_type TicketType @relation(fields: [ticket_type_id], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
 }

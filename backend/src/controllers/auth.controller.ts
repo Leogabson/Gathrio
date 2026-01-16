@@ -167,7 +167,7 @@ export const resetPasswordHandler = async (
     }
 
     const result = await resetPassword(token, password);
-
+   
     res.status(200).json({
       success: true,
       message: result.message,

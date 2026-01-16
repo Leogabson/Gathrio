@@ -120,6 +120,16 @@ export const forgotPassword = async (email: string) => {
     },
   });
 
+  // 📧 PRODUCTION: Send email with reset link
+  // TODO: Implement email sending
+  // const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+  // await sendEmail({
+  //   to: user.email,
+  //   subject: 'Reset Your Gathrio Password',
+  //   template: 'password-reset',
+  //   data: { firstName: user.first_name, resetUrl }
+  // });
+
   return {
     message: "Password reset link sent to your email",
     resetToken,
