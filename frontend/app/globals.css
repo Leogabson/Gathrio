@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary-purple: #6366f1;
+    --color-primary-blue: #3b82f6;
+    --color-neutral-dark: #1f2937;
+    --color-neutral-medium: #6b7280;
+    --color-neutral-light: #f3f4f6;
+    --color-accent-success: #10b981;
+    --color-accent-warning: #f59e0b;
+    --color-accent-error: #ef4444;
+    --color-accent-info: #3b82f6;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+  }
+}
