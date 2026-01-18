@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "@/components/ui/EventCard";
 import Link from "next/link";
+import Image from "next/image";
 
 interface TicketType {
   id: string;
@@ -151,9 +152,12 @@ const EventsPage: React.FC = () => {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#6366F1] rounded-lg flex items-center justify-center">
-            <div className="w-5 h-5 bg-white rounded"></div>
-          </div>
+          <Image
+            src="/gathrio-icon-color.png"
+            alt="gathrio"
+            width={40}
+            height={40}
+          />
           <span className="text-xl font-bold text-gray-900">Gathrio</span>
         </div>
 
@@ -179,31 +183,34 @@ const EventsPage: React.FC = () => {
       <header className="hidden md:flex bg-white border-b border-gray-200 px-6 py-4 items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#6366F1] rounded-lg flex items-center justify-center">
-              <div className="w-6 h-6 bg-white rounded"></div>
-            </div>
+            <Image
+              src="/gathrio-icon-color.png"
+              alt="gathrio"
+              width={40}
+              height={40}
+            />
             <span className="text-2xl font-bold text-gray-900">Gathrio</span>
           </div>
 
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-46">
             <Link href="/events" className="text-[#6366F1] font-medium">
               Events
             </Link>
             <Link
               href="/create-event"
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-blue-900"
             >
               Create Event
             </Link>
             <Link
               href="/my-tickets"
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-blue-900"
             >
               My Tickets
             </Link>
             <Link
               href="/calendar"
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-blue-900"
             >
               Calendar
             </Link>
@@ -303,7 +310,7 @@ const EventsPage: React.FC = () => {
 
               <Link
                 href="/create-event"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 mb-2"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-900 mb-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg
@@ -324,7 +331,7 @@ const EventsPage: React.FC = () => {
 
               <Link
                 href="/my-tickets"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 mb-2"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-900 mb-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg
@@ -345,7 +352,7 @@ const EventsPage: React.FC = () => {
 
               <Link
                 href="/calendar"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 mb-2"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-900 mb-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg
@@ -366,7 +373,7 @@ const EventsPage: React.FC = () => {
 
               <Link
                 href="/profile"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 mb-2"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-900 mb-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg
@@ -667,7 +674,7 @@ const EventsPage: React.FC = () => {
                     {event._count?.bookings || 1240} Online
                   </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
                     <h4 className="text-white font-bold mb-1">{event.title}</h4>
                     <div className="flex items-center gap-1 text-white/80 text-sm">
                       <svg
@@ -769,7 +776,7 @@ const EventsPage: React.FC = () => {
               return (
                 <Link key={event.id} href={`/events/${event.id}`}>
                   <div className="flex gap-3">
-                    <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
+                    <div className="relative w-24 h-24 rounded-xl overflow-hidden shrink-0">
                       {event.banner_image_url ? (
                         <img
                           src={event.banner_image_url}

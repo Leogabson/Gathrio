@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api";
+import Image from "next/image";
 
 const SignInPage: React.FC = () => {
   const router = useRouter();
@@ -75,9 +76,12 @@ const SignInPage: React.FC = () => {
       <div className="w-full max-w-[550px]">
         {/* Logo Placeholder */}
         <div className="flex items-center justify-center mb-12">
-          <div className="w-16 h-16 bg-[#6366F1] rounded-2xl flex items-center justify-center shadow-lg">
-            <div className="w-10 h-10 bg-white rounded-lg"></div>
-          </div>
+          <Image
+            src="/gathrio-icon-color.png"
+            alt="gathrio"
+            width={40}
+            height={40}
+          />
           <h1 className="ml-4 text-3xl font-bold text-gray-900">Gathrio</h1>
         </div>
 
