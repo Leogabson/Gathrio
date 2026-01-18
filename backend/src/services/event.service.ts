@@ -54,6 +54,9 @@ interface EventFilters {
   end_date?: Date;
   search?: string;
   is_featured?: boolean;
+  min_price?: number;
+  max_price?: number;
+  location?: string;
   limit?: number;
   offset?: number;
 }
@@ -94,6 +97,9 @@ export const getEvents = async (filters: EventFilters = {}) => {
     end_date,
     search,
     is_featured,
+    min_price,
+    max_price,
+    location,
     limit = 20,
     offset = 0,
   } = filters;
@@ -130,6 +136,30 @@ export const getEvents = async (filters: EventFilters = {}) => {
       { description: { contains: search, mode: "insensitive" } },
       { category: { contains: search, mode: "insensitive" } },
     ];
+  }
+
+  if (location) {
+    where.OR = where.OR || [];
+    where.OR.push(
+      { venue_name: { contains: location, mode: "insensitive" } },
+      { venue_address: { contains: location, mode: "insensitive" } },
+    );
+  }
+
+  if (min_price !== undefined || max_price !== undefined) {
+    where.ticket_types = {
+      some: {
+        price: {},
+      },
+    };
+
+    if (min_price !== undefined) {
+      where.ticket_types.some.price.gte = min_price;
+    }
+
+    if (max_price !== undefined) {
+      where.ticket_types.some.price.lte = max_price;
+    }
   }
 
   const [events, total] = await Promise.all([
@@ -199,7 +229,7 @@ export const getEventById = async (eventId: string) => {
 export const updateEvent = async (
   eventId: string,
   userId: string,
-  input: UpdateEventInput
+  input: UpdateEventInput,
 ) => {
   const event = await prisma.event.findUnique({
     where: { id: eventId },

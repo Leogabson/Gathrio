@@ -99,6 +99,9 @@ export const list = async (req: Request, res: Response): Promise<void> => {
       end_date,
       search,
       is_featured,
+      min_price,
+      max_price,
+      location,
       limit,
       offset,
     } = req.query;
@@ -109,11 +112,14 @@ export const list = async (req: Request, res: Response): Promise<void> => {
     if (event_type) filters.event_type = event_type as string;
     if (status) filters.status = status as string;
     if (search) filters.search = search as string;
+    if (location) filters.location = location as string;
     if (is_featured !== undefined) filters.is_featured = is_featured === "true";
     if (limit) filters.limit = parseInt(limit as string);
     if (offset) filters.offset = parseInt(offset as string);
     if (start_date) filters.start_date = new Date(start_date as string);
     if (end_date) filters.end_date = new Date(end_date as string);
+    if (min_price) filters.min_price = parseFloat(min_price as string);
+    if (max_price) filters.max_price = parseFloat(max_price as string);
 
     const result = await getEvents(filters);
 
@@ -224,7 +230,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
 
 export const getMyEvents = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const userId = (req as any).user?.userId;
@@ -255,7 +261,7 @@ export const getMyEvents = async (
 
 export const getFeatured = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { limit } = req.query;
