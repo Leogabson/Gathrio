@@ -87,7 +87,7 @@ const EventCard: React.FC<EventCardProps> = ({
     <Link href={`/events/${id}`}>
       <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer group">
         {/* Banner Image */}
-        <div className="relative h-48 bg-gradient-to-br from-[#6366F1] to-[#3B82F6] overflow-hidden">
+        <div className="relative h-48 bg-linear-to-br from-[#6366F1] to-[#3B82F6] overflow-hidden">
           {banner_image_url ? (
             <img
               src={banner_image_url}
