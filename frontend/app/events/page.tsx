@@ -104,12 +104,12 @@ const EventsPage: React.FC = () => {
   const fetchLiveEvents = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/events?status=live&limit=3",
+        "http://localhost:5000/api/events/live?limit=3",
       );
       const data = await response.json();
 
       if (data.success) {
-        setLiveEvents(data.data.events);
+        setLiveEvents(data.data);
       }
     } catch (error) {
       console.error("Error fetching live events:", error);
@@ -118,6 +118,7 @@ const EventsPage: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    ``;
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",

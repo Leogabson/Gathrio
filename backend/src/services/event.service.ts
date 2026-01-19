@@ -304,6 +304,44 @@ export const getOrganizerEvents = async (organizerId: string) => {
   return events;
 };
 
+export const getLiveEvents = async (limit: number = 10) => {
+  const now = new Date();
+
+  const events = await prisma.event.findMany({
+    where: {
+      status: "published",
+      start_time: {
+        lte: now,
+      },
+      end_time: {
+        gte: now,
+      },
+    },
+    include: {
+      ticket_types: true,
+      organizer: {
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          profile_photo_url: true,
+        },
+      },
+      _count: {
+        select: {
+          bookings: true,
+        },
+      },
+    },
+    orderBy: {
+      start_time: "asc",
+    },
+    take: limit,
+  });
+
+  return events;
+};
+
 export const getFeaturedEvents = async (limit: number = 6) => {
   const events = await prisma.event.findMany({
     where: {

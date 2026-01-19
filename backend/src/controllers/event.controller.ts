@@ -7,6 +7,7 @@ import {
   deleteEvent,
   getOrganizerEvents,
   getFeaturedEvents,
+  getLiveEvents,
 } from "../services/event.service";
 
 export const create = async (req: Request, res: Response): Promise<void> => {
@@ -252,6 +253,27 @@ export const getMyEvents = async (
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to fetch your events";
+    res.status(400).json({
+      success: false,
+      message: errorMessage,
+    });
+  }
+};
+
+export const getLive = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { limit } = req.query;
+    const limitNumber = limit ? parseInt(limit as string) : 10;
+
+    const events = await getLiveEvents(limitNumber);
+
+    res.status(200).json({
+      success: true,
+      data: events,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch live events";
     res.status(400).json({
       success: false,
       message: errorMessage,
