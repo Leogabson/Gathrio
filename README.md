@@ -500,16 +500,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Community
 
-- **Website:** [gathrio.io](https://gathrio.io)
+- **Website:** [gathrio.live](https://gathrio.live)
 - **Email:** hello@gathrio.io
 - **GitHub Issues:** [Report a bug](https://github.com/gathrio/gathrio-platform/issues)
 - **Discussions:** [Join the conversation](https://github.com/gathrio/gathrio-platform/discussions)
 
 ### Team
 
-- **Founder/CEO:** [Your Name]
-- **Tech Lead:** [Tech Lead Name]
-- **Engineering Team:** [Team Members]
+- **Founder/CEO:** [Gabriel]
+- **Tech Lead:** [Gabbriel]
 
 ---
 
@@ -576,10 +575,10 @@ See [full roadmap](docs/ROADMAP.md) for detailed milestones.
 ---
 
 <div align="center">
-  <p>Made with ❤️ by the Gathrio Team</p>
-  <p>© 2025 Gathrio. All rights reserved.</p>
+  <p>Built by the Gathrio Team</p>
+  <p>© 2026 Gathrio. All rights reserved.</p>
   
-  <a href="https://gathrio.io">Website</a> •
+  <a href="https://gathrio.live">Website</a> •
   <a href="https://twitter.com/gathrio">Twitter</a> •
   <a href="https://linkedin.com/company/gathrio">LinkedIn</a>
 </div>
