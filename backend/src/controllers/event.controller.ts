@@ -8,6 +8,7 @@ import {
   getOrganizerEvents,
   getFeaturedEvents,
   getLiveEvents,
+  getPlatformMetrics,
 } from "../services/event.service";
 
 export const create = async (req: Request, res: Response): Promise<void> => {
@@ -274,6 +275,29 @@ export const getLive = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to fetch live events";
+    res.status(400).json({
+      success: false,
+      message: errorMessage,
+    });
+  }
+};
+
+// real data metrics
+
+export const getMetrics = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const metrics = await getPlatformMetrics();
+
+    res.status(200).json({
+      success: true,
+      data: metrics,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch metrics";
     res.status(400).json({
       success: false,
       message: errorMessage,

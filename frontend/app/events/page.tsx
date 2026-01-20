@@ -56,10 +56,17 @@ const EventsPage: React.FC = () => {
     { icon: "⚽", name: "Sports", value: "Sports" },
   ];
 
+  const [metrics, setMetrics] = useState({
+    totalEvents: 0,
+    totalAttendees: 0,
+    satisfaction: 0,
+  });
+
   useEffect(() => {
     fetchEvents();
     fetchFeaturedEvents();
     fetchLiveEvents();
+    fetchMetrics();
   }, [searchQuery, selectedEventType]);
 
   const fetchEvents = async () => {
@@ -113,6 +120,19 @@ const EventsPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching live events:", error);
+    }
+  };
+
+  const fetchMetrics = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/events/metrics");
+      const data = await response.json();
+
+      if (data.success) {
+        setMetrics(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching metrics:", error);
     }
   };
 
@@ -722,13 +742,14 @@ const EventsPage: React.FC = () => {
         <h3 className="text-lg font-bold text-gray-900 mb-4">
           Explore Categories
         </h3>
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+
+        <div className="flex gap-32 overflow-x-auto scrollbar-hide pb-2">
           {categories.map((cat) => (
             <button
               key={cat.value}
               className="flex flex-col items-center gap-2 min-w-17.5"
             >
-              <div className="w-14 h-14 bg-linear-to-br from-blue-50 to-purple-50 rounded-2xl flex items-center justify-center text-2xl">
+              <div className="w-14 h-14 bg-linear-to-br from-blue-300 to-purple-300 rounded-3xl flex items-center justify-center text-2xl">
                 {cat.icon}
               </div>
               <span className="text-xs font-medium text-gray-700">
@@ -848,20 +869,30 @@ const EventsPage: React.FC = () => {
             Trusted Platform
           </h4>
         </div>
+
         <div className="flex justify-around">
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">10k+</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {metrics.totalEvents > 0 ? `${metrics.totalEvents}+` : "0"}
+            </div>
             <div className="text-xs text-gray-600">Events Hosted</div>
           </div>
+
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">1M+</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {metrics.totalAttendees > 0 ? `${metrics.totalAttendees}+` : "0"}
+            </div>
             <div className="text-xs text-gray-600">Attendees</div>
           </div>
+
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900 flex items-center gap-1 justify-center">
-              4.8
+              {metrics.satisfaction > 0
+                ? metrics.satisfaction.toFixed(1)
+                : "0.0"}
               <span className="text-yellow-500">⭐</span>
             </div>
+
             <div className="text-xs text-gray-600">Satisfaction</div>
           </div>
         </div>
