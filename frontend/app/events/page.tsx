@@ -59,6 +59,21 @@ const EventsPage: React.FC = () => {
     end: "",
   });
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".filter-dropdown")) {
+        setShowDateFilter(false);
+        setShowEventTypeFilter(false);
+        setShowLocationFilter(false);
+        setShowPriceFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const categories = [
     { icon: "🎤", name: "Conferences", value: "Technology" },
     { icon: "🎵", name: "Concerts", value: "Music" },
@@ -611,7 +626,7 @@ const EventsPage: React.FC = () => {
       <div className="px-4 pb-4 md:px-6">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           {/* Date Filter */}
-          <div className="relative">
+          <div className="relative filter-dropdown">
             <button
               onClick={() => {
                 setShowDateFilter(!showDateFilter);
@@ -781,7 +796,7 @@ const EventsPage: React.FC = () => {
           </div>
 
           {/* Event Type Filter */}
-          <div className="relative">
+          <div className="relative filter-dropdown">
             <button
               onClick={() => {
                 setShowEventTypeFilter(!showEventTypeFilter);
@@ -863,7 +878,7 @@ const EventsPage: React.FC = () => {
           </div>
 
           {/* Location Filter */}
-          <div className="relative">
+          <div className="relative filter-dropdown">
             <button
               onClick={() => {
                 setShowLocationFilter(!showLocationFilter);
@@ -946,7 +961,7 @@ const EventsPage: React.FC = () => {
           </div>
 
           {/* Price Filter */}
-          <div className="relative">
+          <div className="relative filter-dropdown">
             <button
               onClick={() => {
                 setShowPriceFilter(!showPriceFilter);
@@ -1285,6 +1300,59 @@ const EventsPage: React.FC = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6366F1]"></div>
+          </div>
+        ) : events.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+              <svg
+                className="w-12 h-12 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              No Events Found
+            </h3>
+            <p className="text-gray-600 text-center mb-6 max-w-md">
+              We couldn't find any events matching your criteria. Try adjusting
+              your filters or search terms.
+            </p>
+            {(selectedEventType ||
+              selectedCategory ||
+              searchQuery ||
+              selectedLocation ||
+              priceRange.min ||
+              priceRange.max ||
+              dateRange.start ||
+              dateRange.end) && (
+              <button
+                onClick={clearAllFilters}
+                className="px-6 py-3 bg-[#6366F1] text-white font-semibold rounded-xl hover:bg-[#5558E3] transition-colors flex items-center gap-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Clear All Filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
