@@ -47,6 +47,17 @@ const EventsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEventType, setSelectedEventType] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [showDateFilter, setShowDateFilter] = useState(false);
+  const [showEventTypeFilter, setShowEventTypeFilter] = useState(false);
+  const [showLocationFilter, setShowLocationFilter] = useState(false);
+  const [showPriceFilter, setShowPriceFilter] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
+    start: "",
+    end: "",
+  });
 
   const categories = [
     { icon: "🎤", name: "Conferences", value: "Technology" },
@@ -54,6 +65,7 @@ const EventsPage: React.FC = () => {
     { icon: "🎨", name: "Workshops", value: "Arts" },
     { icon: "👥", name: "Networking", value: "Business" },
     { icon: "⚽", name: "Sports", value: "Sports" },
+    { icon: "🎭", name: "Entertainment", value: "Entertainment" },
   ];
 
   const [metrics, setMetrics] = useState({
@@ -67,16 +79,28 @@ const EventsPage: React.FC = () => {
     fetchFeaturedEvents();
     fetchLiveEvents();
     fetchMetrics();
-  }, [searchQuery, selectedEventType]);
+  }, [
+    searchQuery,
+    selectedEventType,
+    selectedCategory,
+    selectedLocation,
+    dateRange,
+    priceRange,
+  ]);
 
   const fetchEvents = async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
       params.append("status", "published");
-
       if (searchQuery) params.append("search", searchQuery);
       if (selectedEventType) params.append("event_type", selectedEventType);
+      if (selectedCategory) params.append("category", selectedCategory);
+      if (selectedLocation) params.append("location", selectedLocation);
+      if (dateRange.start) params.append("start_date", dateRange.start);
+      if (dateRange.end) params.append("end_date", dateRange.end);
+      if (priceRange.min) params.append("min_price", priceRange.min);
+      if (priceRange.max) params.append("max_price", priceRange.max);
 
       const response = await fetch(
         `http://localhost:5000/api/events?${params.toString()}`,
@@ -91,6 +115,25 @@ const EventsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Add click handler function:
+  const handleCategoryClick = (categoryValue: string) => {
+    if (selectedCategory === categoryValue) {
+      setSelectedCategory("");
+    } else {
+      setSelectedCategory(categoryValue);
+    }
+  };
+
+  // Add clear all filters function:
+  const clearAllFilters = () => {
+    setSelectedEventType("");
+    setSelectedCategory("");
+    setSearchQuery("");
+    setSelectedLocation("");
+    setPriceRange({ min: "", max: "" });
+    setDateRange({ start: "", end: "" });
   };
 
   const fetchFeaturedEvents = async () => {
@@ -153,7 +196,7 @@ const EventsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0 overflow-x-hidden">
       {/* Mobile Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-50 md:hidden">
         <button onClick={() => setIsMobileMenuOpen(true)} className="p-2">
@@ -213,7 +256,7 @@ const EventsPage: React.FC = () => {
             <span className="text-2xl font-bold text-gray-900">Gathrio</span>
           </div>
 
-          <nav className="flex items-center gap-46">
+          <nav className="flex items-center gap-6">
             <Link href="/events" className="text-[#6366F1] font-medium">
               Events
             </Link>
@@ -565,79 +608,479 @@ const EventsPage: React.FC = () => {
       </div>
 
       {/* Filter Chips */}
-      <div className="px-4 pb-4 flex gap-2 overflow-x-auto scrollbar-hide">
-        <button className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1">
-          Date
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
+      <div className="px-4 pb-4 md:px-6">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          {/* Date Filter */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowDateFilter(!showDateFilter);
+                setShowEventTypeFilter(false);
+                setShowLocationFilter(false);
+                setShowPriceFilter(false);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 transition-colors ${
+                dateRange.start || dateRange.end
+                  ? "bg-[#6366F1] text-white"
+                  : "bg-white border border-gray-200 hover:border-[#6366F1]"
+              }`}
+            >
+              {dateRange.start && dateRange.end
+                ? `${new Date(dateRange.start).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${new Date(dateRange.end).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+                : dateRange.start
+                  ? `From ${new Date(dateRange.start).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+                  : "Date"}
+              <svg
+                className={`w-4 h-4 transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
 
-        <button
-          onClick={() =>
-            setSelectedEventType(selectedEventType === "hybrid" ? "" : "hybrid")
-          }
-          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 ${
-            selectedEventType === "hybrid"
-              ? "bg-[#6366F1] text-white"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          Hybrid
-          {selectedEventType === "hybrid" && (
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clipRule="evenodd"
-              />
-            </svg>
+            {/* Date Dropdown */}
+            {showDateFilter && (
+              <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50 w-64">
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      const today = new Date();
+                      const todayStr = today.toISOString().split("T")[0];
+                      setDateRange({ start: todayStr, end: todayStr });
+                      setShowDateFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    Today
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const today = new Date();
+                      const dayOfWeek = today.getDay();
+                      const saturday = new Date(today);
+                      saturday.setDate(today.getDate() + (6 - dayOfWeek));
+                      const sunday = new Date(saturday);
+                      sunday.setDate(saturday.getDate() + 1);
+
+                      setDateRange({
+                        start: saturday.toISOString().split("T")[0],
+                        end: sunday.toISOString().split("T")[0],
+                      });
+                      setShowDateFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    This Weekend
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const today = new Date();
+                      const endOfWeek = new Date(today);
+                      endOfWeek.setDate(today.getDate() + (7 - today.getDay()));
+
+                      setDateRange({
+                        start: today.toISOString().split("T")[0],
+                        end: endOfWeek.toISOString().split("T")[0],
+                      });
+                      setShowDateFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    This Week
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const today = new Date();
+                      const endOfMonth = new Date(
+                        today.getFullYear(),
+                        today.getMonth() + 1,
+                        0,
+                      );
+
+                      setDateRange({
+                        start: today.toISOString().split("T")[0],
+                        end: endOfMonth.toISOString().split("T")[0],
+                      });
+                      setShowDateFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    This Month
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const today = new Date();
+                      const nextMonth = new Date(
+                        today.getFullYear(),
+                        today.getMonth() + 1,
+                        1,
+                      );
+                      const endOfNextMonth = new Date(
+                        today.getFullYear(),
+                        today.getMonth() + 2,
+                        0,
+                      );
+
+                      setDateRange({
+                        start: nextMonth.toISOString().split("T")[0],
+                        end: endOfNextMonth.toISOString().split("T")[0],
+                      });
+                      setShowDateFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    Next Month
+                  </button>
+
+                  <div className="border-t pt-3">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      Custom Date Range
+                    </label>
+
+                    <input
+                      type="date"
+                      value={dateRange.start}
+                      onChange={(e) =>
+                        setDateRange({ ...dateRange, start: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2"
+                      placeholder="Start Date"
+                    />
+
+                    <input
+                      type="date"
+                      value={dateRange.end}
+                      onChange={(e) =>
+                        setDateRange({ ...dateRange, end: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2"
+                      placeholder="End Date"
+                    />
+
+                    <button
+                      onClick={() => setShowDateFilter(false)}
+                      className="w-full px-3 py-2 bg-[#6366F1] text-white rounded-lg text-sm font-medium hover:bg-[#5558E3]"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Event Type Filter */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowEventTypeFilter(!showEventTypeFilter);
+                setShowDateFilter(false);
+                setShowLocationFilter(false);
+                setShowPriceFilter(false);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 transition-colors ${
+                selectedEventType
+                  ? "bg-[#6366F1] text-white"
+                  : "bg-white border border-gray-200 hover:border-[#6366F1]"
+              }`}
+            >
+              {selectedEventType || "Event Type"}
+              <svg
+                className={`w-4 h-4 transition-transform ${showEventTypeFilter ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Event Type Dropdown */}
+            {showEventTypeFilter && (
+              <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-lg border border-gray-200 p-3 z-50 w-48">
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      setSelectedEventType("hybrid");
+                      setShowEventTypeFilter(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                      selectedEventType === "hybrid"
+                        ? "bg-[#6366F1] text-white"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    Hybrid Events
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedEventType("in-person");
+                      setShowEventTypeFilter(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                      selectedEventType === "in-person"
+                        ? "bg-[#6366F1] text-white"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    In-Person
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedEventType("virtual");
+                      setShowEventTypeFilter(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                      selectedEventType === "virtual"
+                        ? "bg-[#6366F1] text-white"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    Virtual
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Location Filter */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowLocationFilter(!showLocationFilter);
+                setShowDateFilter(false);
+                setShowEventTypeFilter(false);
+                setShowPriceFilter(false);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 transition-colors ${
+                selectedLocation
+                  ? "bg-[#6366F1] text-white"
+                  : "bg-white border border-gray-200 hover:border-[#6366F1]"
+              }`}
+            >
+              {selectedLocation || "Location"}
+              <svg
+                className={`w-4 h-4 transition-transform ${showLocationFilter ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Location Dropdown */}
+            {showLocationFilter && (
+              <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50 w-64">
+                <input
+                  type="text"
+                  placeholder="Search location..."
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3"
+                />
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      setSelectedLocation("Port Harcourt");
+                      setShowLocationFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    📍 Port Harcourt
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedLocation("Lagos");
+                      setShowLocationFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    📍 Lagos
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedLocation("Abuja");
+                      setShowLocationFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    📍 Abuja
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedLocation("Online");
+                      setShowLocationFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    🌐 Online/Virtual
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Price Filter */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowPriceFilter(!showPriceFilter);
+                setShowDateFilter(false);
+                setShowEventTypeFilter(false);
+                setShowLocationFilter(false);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 transition-colors ${
+                priceRange.min || priceRange.max
+                  ? "bg-[#6366F1] text-white"
+                  : "bg-white border border-gray-200 hover:border-[#6366F1]"
+              }`}
+            >
+              {priceRange.min || priceRange.max
+                ? `₦${priceRange.min || "0"} - ₦${priceRange.max || "∞"}`
+                : "Price"}
+              <svg
+                className={`w-4 h-4 transition-transform ${showPriceFilter ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Price Dropdown */}
+            {showPriceFilter && (
+              <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50 w-64">
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      setPriceRange({ min: "0", max: "0" });
+                      setShowPriceFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    Free Events
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPriceRange({ min: "0", max: "5000" });
+                      setShowPriceFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    Under ₦5,000
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPriceRange({ min: "5000", max: "20000" });
+                      setShowPriceFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    ₦5,000 - ₦20,000
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPriceRange({ min: "20000", max: "" });
+                      setShowPriceFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm"
+                  >
+                    Above ₦20,000
+                  </button>
+                  <div className="border-t pt-3">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      Custom Price Range
+                    </label>
+                    <div className="flex items-center gap-2 mb-2">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={priceRange.min}
+                        onChange={(e) =>
+                          setPriceRange({ ...priceRange, min: e.target.value })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      />
+                      <span className="text-gray-500">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={priceRange.max}
+                        onChange={(e) =>
+                          setPriceRange({ ...priceRange, max: e.target.value })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      />
+                    </div>
+                    <button
+                      onClick={() => setShowPriceFilter(false)}
+                      className="w-full px-3 py-2 bg-[#6366F1] text-white rounded-lg text-sm font-medium hover:bg-[#5558E3]"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Clear All Button */}
+          {(selectedEventType ||
+            selectedCategory ||
+            searchQuery ||
+            selectedLocation ||
+            priceRange.min ||
+            priceRange.max ||
+            dateRange.start ||
+            dateRange.end) && (
+            <button
+              onClick={() => {
+                clearAllFilters();
+              }}
+              className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1"
+            >
+              Clear All
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           )}
-        </button>
-
-        <button className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1">
-          Location
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-
-        <button className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1">
-          Price
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
+        </div>
       </div>
 
       {/* Live Now Section */}
@@ -738,21 +1181,79 @@ const EventsPage: React.FC = () => {
       )}
 
       {/* Explore Categories */}
-      <div className="px-4 pb-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">
-          Explore Categories
-        </h3>
+      <div className="px-4 pb-6 md:px-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-900">
+            Explore Categories
+          </h3>
+          {selectedCategory && (
+            <button
+              onClick={() => setSelectedCategory("")}
+              className="text-sm text-[#6366F1] font-medium"
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
-        <div className="flex gap-32 overflow-x-auto scrollbar-hide pb-2">
+        {/* Mobile: Horizontal Scroll */}
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 md:hidden">
           {categories.map((cat) => (
             <button
               key={cat.value}
-              className="flex flex-col items-center gap-2 min-w-17.5"
+              onClick={() => handleCategoryClick(cat.value)}
+              className={`flex flex-col items-center gap-2 min-w-[70px] transition-all ${
+                selectedCategory === cat.value ? "scale-105" : ""
+              }`}
             >
-              <div className="w-14 h-14 bg-linear-to-br from-blue-300 to-purple-300 rounded-3xl flex items-center justify-center text-2xl">
+              <div
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all ${
+                  selectedCategory === cat.value
+                    ? "bg-[#6366F1] shadow-lg"
+                    : "bg-gradient-to-br from-purple-100 to-blue-100"
+                }`}
+              >
                 {cat.icon}
               </div>
-              <span className="text-xs font-medium text-gray-700">
+              <span
+                className={`text-xs font-medium text-center ${
+                  selectedCategory === cat.value
+                    ? "text-[#6366F1]"
+                    : "text-gray-700"
+                }`}
+              >
+                {cat.name}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop: Grid Layout */}
+        <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {categories.map((cat) => (
+            <button
+              key={cat.value}
+              onClick={() => handleCategoryClick(cat.value)}
+              className={`flex flex-col items-center gap-3 p-4 rounded-2xl transition-all hover:shadow-md ${
+                selectedCategory === cat.value
+                  ? "bg-[#6366F1] shadow-lg scale-105"
+                  : "bg-gradient-to-br from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100"
+              }`}
+            >
+              <div
+                className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-all ${
+                  selectedCategory === cat.value ? "bg-white/20" : "bg-white"
+                }`}
+              >
+                {cat.icon}
+              </div>
+              <span
+                className={`text-sm font-semibold text-center ${
+                  selectedCategory === cat.value
+                    ? "text-white"
+                    : "text-gray-800"
+                }`}
+              >
                 {cat.name}
               </span>
             </button>
