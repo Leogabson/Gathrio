@@ -4,6 +4,7 @@ import {
   loginUser,
   forgotPassword,
   resetPassword,
+  getUserById,
 } from "../services/auth.service";
 import {
   validateRegistrationData,
@@ -176,6 +177,35 @@ export const resetPasswordHandler = async (
     const errorMessage =
       error instanceof Error ? error.message : "Failed to reset password";
     res.status(400).json({
+      success: false,
+      message: errorMessage,
+    });
+  }
+};
+
+export const me = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user?.userId;
+
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized: Please login first",
+      });
+      return;
+    }
+
+    const user = await getUserById(userId);
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch current user";
+    const statusCode = errorMessage === "User not found" ? 404 : 400;
+    res.status(statusCode).json({
       success: false,
       message: errorMessage,
     });

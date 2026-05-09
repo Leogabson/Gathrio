@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   BarChart3,
@@ -63,13 +64,16 @@ const stats = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#f6f3ff] text-slate-900">
-      <main className="mx-auto max-w-md px-4 pb-16 pt-5 sm:max-w-2xl">
-        <section className="rounded-[28px] border border-violet-100 bg-white px-4 pb-5 pt-4 shadow-[0_8px_24px_rgba(72,57,142,0.08)] sm:px-8">
+      <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-5 sm:px-6 lg:px-10 lg:pt-8">
+        <section className="rounded-[28px] border border-violet-100 bg-white px-4 pb-5 pt-4 shadow-[0_8px_24px_rgba(72,57,142,0.08)] sm:px-8 lg:px-10 lg:pb-8 lg:pt-7">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-xs font-bold text-white">
-                G
-              </span>
+              <Image
+                src="/gathrio-icon-color.png"
+                alt="gathrio"
+                width={40}
+                height={40}
+              />
               <span className="text-sm font-semibold tracking-wide text-slate-900">
                 GATHRIO
               </span>
@@ -82,69 +86,70 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <p className="mt-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-500">
-            Event + Fundraising Platform
-          </p>
-          <h1 className="mt-2 text-center text-[34px] font-extrabold leading-[1.05] tracking-[-0.02em] text-slate-900 sm:text-[42px]">
-            Connect Events
-            <br />
-            Raise Funds
-          </h1>
-          <p className="mx-auto mt-3 max-w-sm text-center text-[13px] leading-5 text-slate-600">
-            Run registrations, collect payments, and track performance from one
-            modern event workspace.
-          </p>
+          <div className="mt-6 lg:grid lg:grid-cols-12 lg:items-center lg:gap-8">
+            <div className="lg:col-span-5 lg:pr-2">
+              <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-500 lg:text-left">
+                Event + Fundraising Platform
+              </p>
+              <h1 className="mt-2 text-center text-[34px] font-extrabold leading-[1.05] tracking-[-0.02em] text-slate-900 sm:text-[42px] lg:text-left lg:text-[56px]">
+                Connect Events
+                <br />
+                Raise Funds
+              </h1>
+              <p className="mx-auto mt-3 max-w-sm text-center text-[13px] leading-5 text-slate-600 sm:max-w-xl sm:text-sm lg:mx-0 lg:max-w-xl lg:text-left lg:text-base">
+                Run registrations, collect payments, and track performance from one
+                modern event workspace.
+              </p>
 
-          <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-700"
-            >
-              Start Free Trial
-            </Link>
-            <Link
-              href="/events"
-              className="inline-flex items-center justify-center rounded-xl border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-50"
-            >
-              Browse Events
-            </Link>
-          </div>
-
-          <div className="mt-5 rounded-2xl bg-gradient-to-br from-[#1b2046] to-[#2a2f63] p-4 text-white">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] text-violet-200">Live Event Analytics</p>
-              <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-medium">
-                Updating
-              </span>
-            </div>
-            <div className="mt-3 h-24 rounded-xl bg-gradient-to-br from-violet-500/30 via-indigo-400/20 to-cyan-300/20 p-2">
-              <div className="flex h-full items-end gap-1.5">
-                {[36, 44, 52, 40, 62, 74, 60].map((value, idx) => (
-                  <div
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={idx}
-                    className="w-full rounded-t-md bg-white/70"
-                    style={{ height: `${value}%` }}
-                  />
-                ))}
+              <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-center lg:justify-start lg:mt-6">
+                <Link
+                  href="/signup"
+                  className="inline-flex items-center justify-center rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-700"
+                >
+                  Start Free Trial
+                </Link>
+                <Link
+                  href="/events"
+                  className="inline-flex items-center justify-center rounded-xl border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-50"
+                >
+                  Browse Events
+                </Link>
               </div>
             </div>
-            <p className="mt-3 text-[12px] text-violet-100">
-              1,240 tickets sold this month
-            </p>
+
+            <div className="mt-6 lg:col-span-7 lg:mt-0">
+              <div className="overflow-hidden rounded-2xl border border-violet-100 bg-white">
+                <Image
+                  src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80"
+                  alt="People attending a live community event"
+                  width={1200}
+                  height={800}
+                  className="h-52 w-full object-cover sm:h-64 lg:h-96"
+                />
+                <div className="bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-3 text-white">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-100">
+                    Real gatherings, real impact
+                  </p>
+                  <p className="mt-1 text-sm">
+                    Manage registrations and fundraising for actual events with
+                    Gathrio.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="mt-3 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8">
+        <section className="mt-4 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8 lg:px-10">
           <p className="text-center text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
             For who?
           </p>
-          <h2 className="mt-2 text-center text-[22px] font-bold tracking-[-0.01em]">
+          <h2 className="mt-2 text-center text-[22px] font-bold tracking-[-0.01em] lg:text-[30px]">
             A solution for every
             <br />
             growing community
           </h2>
-          <div className="mt-4 grid grid-cols-1 gap-2.5">
+          <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
             {forWho.map((group) => (
               <div
                 key={group}
@@ -156,12 +161,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-3 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8">
+        <section className="mt-4 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8 lg:px-10">
           <div className="mb-3 flex items-center gap-2">
             <Sparkles className="text-violet-600" size={16} />
             <h2 className="text-base font-semibold">Platform features</h2>
           </div>
-          <div className="space-y-2.5">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:gap-4">
             {platformFeatures.map(({ title, description, icon: Icon, accent }) => (
               <div
                 key={title}
@@ -177,7 +182,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-3 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8">
+        <section className="mt-4 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8 lg:px-10">
           <h2 className="text-base font-semibold">Strategic insights</h2>
           <div className="mt-3 h-36 rounded-2xl bg-gradient-to-b from-violet-50 to-white p-3">
             <div className="flex h-full items-end gap-1.5">
@@ -208,7 +213,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-3 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8">
+        <section className="mt-4 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8 lg:px-10">
           <h2 className="text-base font-semibold">What organizers say</h2>
           <div className="mt-3 rounded-2xl bg-slate-50 p-4">
             <p className="text-[13px] leading-5 text-slate-700">
@@ -222,7 +227,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-3 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8">
+        <section className="mt-4 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8 lg:px-10">
           <h2 className="text-base font-semibold">Simple pricing</h2>
           <div className="mt-3 rounded-2xl border border-violet-200 bg-violet-50 p-4">
             <p className="text-[11px] uppercase tracking-[0.14em] text-violet-600">
@@ -243,7 +248,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-3 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8">
+        <section className="mt-4 rounded-3xl border border-violet-100 bg-white px-4 py-5 shadow-[0_6px_20px_rgba(72,57,142,0.07)] sm:px-8 lg:px-10">
           <h2 className="text-base font-semibold">FAQ</h2>
           <div className="mt-3 space-y-2">
             {[
@@ -261,11 +266,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-4 rounded-3xl bg-gradient-to-br from-violet-700 to-indigo-700 px-4 py-7 text-white shadow-lg sm:px-8">
+        <section className="mt-5 rounded-3xl bg-gradient-to-br from-violet-700 to-indigo-700 px-4 py-7 text-white shadow-lg sm:px-8 lg:px-10 lg:py-10">
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-violet-100">
             Ready to scale your next event?
           </p>
-          <h2 className="mt-2 text-[24px] font-bold leading-tight">
+          <h2 className="mt-2 text-[24px] font-bold leading-tight lg:text-[34px]">
             Build your launch funnel
             <br />
             with Gathrio.
@@ -291,8 +296,8 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="bg-[#12152b] px-4 py-10 text-violet-100">
-        <div className="mx-auto max-w-md sm:max-w-2xl">
+      <footer className="bg-[#12152b] px-4 py-10 text-violet-100 sm:px-6 lg:px-10">
+        <div className="mx-auto w-full max-w-7xl">
           <div className="flex items-center gap-2">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 text-xs font-bold text-white">
               G

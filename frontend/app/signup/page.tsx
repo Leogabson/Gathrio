@@ -99,10 +99,17 @@ const SignUpPage: React.FC = () => {
         password: formData.password,
         first_name: formData.first_name,
         last_name: formData.last_name,
+        role,
       });
 
-      if (response.success) {
-        router.push("/signin");
+      if (response.success && response.data) {
+        const authData = response.data as { user: { role: string }; accessToken: string };
+        localStorage.setItem("accessToken", authData.accessToken);
+        if (authData.user.role === "organizer") {
+          router.push("/organizer/profile");
+        } else {
+          router.push("/events");
+        }
       } else {
         setErrors({ general: response.message || "Registration failed" });
       }
