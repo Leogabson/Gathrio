@@ -58,9 +58,16 @@ const SignInPage: React.FC = () => {
       });
 
       if (response.success && response.data) {
-        const authData = response.data as { user: any; accessToken: string };
+        const authData = response.data as {
+          user: { role: string };
+          accessToken: string;
+        };
         localStorage.setItem("accessToken", authData.accessToken);
-        router.push("/dashboard");
+        if (authData.user.role === "organizer") {
+          router.push("/organizer/profile");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
         setErrors({ general: response.message || "Login failed" });
       }
