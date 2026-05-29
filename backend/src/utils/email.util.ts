@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import nodemailerSendgrid from 'nodemailer-sendgrid';
 
 interface EmailOptions {
   to: string;
@@ -9,30 +8,53 @@ interface EmailOptions {
 }
 
 class EmailService {
-  private transporter: nodemailer.Transporter;
+  private transporter: nodemailer.Transporter | null = null;
 
   constructor() {
-    // Use SendGrid if API key is provided, otherwise fallback to SMTP
-    if (process.env.SENDGRID_API_KEY) {
+    let nodemailerSendgrid: any;
+    try {
+      nodemailerSendgrid = require('nodemailer-sendgrid');
+    } catch (error) {
+      nodemailerSendgrid = null;
+    }
+
+    if (process.env.SENDGRID_API_KEY && nodemailerSendgrid) {
       this.transporter = nodemailer.createTransport(
         nodemailerSendgrid({
           apiKey: process.env.SENDGRID_API_KEY,
         })
       );
     } else {
+      const host = process.env.SMTP_HOST;
+      const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
+      const user = process.env.SMTP_USER;
+      const pass = process.env.SMTP_PASS;
+
+      if (!host || !user || !pass) {
+        console.warn(
+          'EmailService is not configured: set SENDGRID_API_KEY or SMTP_HOST/SMTP_USER/SMTP_PASS.'
+        );
+        return;
+      }
+
       this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.SMTP_PORT || '587'),
+        host,
+        port,
         secure: false,
         auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
+          user,
+          pass,
         },
       });
     }
   }
 
   async sendEmail(options: EmailOptions): Promise<void> {
+    if (!this.transporter) {
+      console.warn('EmailService is not fully configured; skipping email send.');
+      return;
+    }
+
     try {
       const mailOptions = {
         from: process.env.FROM_EMAIL || 'noreply@gathrio.com',
