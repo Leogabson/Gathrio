@@ -1,12 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api";
 import Image from "next/image";
 
 const SignInPage: React.FC = () => {
   const router = useRouter();
+
+  const getOauthUrl = (path: string) => {
+    const raw = process.env.NEXT_PUBLIC_API_URL?.trim() || "http://localhost:5000";
+    const base = raw.replace(/\/+$/, "");
+    const apiBase = base.endsWith("/api") ? base : `${base}/api`;
+    return `${apiBase}${path}`;
+  };
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -58,9 +65,16 @@ const SignInPage: React.FC = () => {
       });
 
       if (response.success && response.data) {
-        const authData = response.data as { user: any; accessToken: string };
+        const authData = response.data as {
+          user: { role: string };
+          accessToken: string;
+        };
         localStorage.setItem("accessToken", authData.accessToken);
-        router.push("/dashboard");
+        if (authData.user.role === "organizer") {
+          router.push("/organizer/profile");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
         setErrors({ general: response.message || "Login failed" });
       }
@@ -70,6 +84,31 @@ const SignInPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("accessToken") : null;
+    if (!token) return;
+
+    localStorage.setItem("accessToken", token);
+
+    (async () => {
+      try {
+        const resp = await authApi.me();
+        if (resp.success && resp.data) {
+          const user = resp.data as any;
+          if (user.role === "organizer") {
+            router.push("/organizer/profile");
+          } else {
+            router.push("/dashboard");
+          }
+        } else {
+          router.push("/events");
+        }
+      } catch (err) {
+        router.push("/events");
+      }
+    })();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
@@ -108,7 +147,10 @@ const SignInPage: React.FC = () => {
 
           {/* OAuth Buttons */}
           <div className="space-y-3 mb-6">
-            <button className="w-full flex items-center justify-center gap-3 px-6 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => (window.location.href = getOauthUrl("/auth/google"))}
+              className="w-full flex items-center justify-center gap-3 px-6 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
@@ -132,7 +174,10 @@ const SignInPage: React.FC = () => {
               </span>
             </button>
 
-            <button className="w-full flex items-center justify-center gap-3 px-6 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => (window.location.href = getOauthUrl("/auth/linkedin"))}
+              className="w-full flex items-center justify-center gap-3 px-6 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+            >
               <svg className="w-5 h-5" fill="#0A66C2" viewBox="0 0 24 24">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
               </svg>

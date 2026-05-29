@@ -23,3 +23,65 @@
     font-family: "Inter", sans-serif;
   }
 }
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fade-in-up 0.9s ease-out both;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.9s ease-out both;
+  }
+
+  .animate-tilt-in {
+    animation: tilt-in 1s ease-out both;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3.5s ease-in-out infinite;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tilt-in {
+  from {
+    opacity: 0;
+    transform: rotateX(-10deg) translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: rotateX(0) translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.015);
+    opacity: 0.96;
+  }
+}

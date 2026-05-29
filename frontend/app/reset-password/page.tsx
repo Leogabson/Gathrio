@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { authApi } from "@/lib/api";
 
-const searchParams = useSearchParams();
-const token = searchParams.get("token") || "";
-
 const ResetPasswordPage: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || "";
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -424,4 +423,14 @@ const ResetPasswordPage: React.FC = () => {
   );
 };
 
-export default ResetPasswordPage;
+export default function ResetPassword() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-600 text-sm">Loading password reset form...</p>
+      </div>
+    }>
+      <ResetPasswordPage />
+    </Suspense>
+  );
+}

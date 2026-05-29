@@ -23,6 +23,7 @@ export interface RegisterInput {
   first_name: string;
   last_name: string;
   phone?: string;
+  role?: "attendee" | "organizer";
 }
 
 export interface LoginInput {
